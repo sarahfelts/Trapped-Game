@@ -25,7 +25,7 @@ function disasterMuse() {
 
 function updateScores(effect) {
     for (let [key, value] of Object.entries(effect)) {
-        scores[key] += value;
+        scores[key] = Math.max(0, scores[key] + value);
         document.getElementById(`${key}-score`).textContent = scores[key];
     }
 }
@@ -35,8 +35,15 @@ function newDay() {
     const category = gameData.byronicEvents[Math.floor((roll - 1) / 2)];
     const event = category.events[Math.floor(Math.random() * category.events.length)];
     
-    document.getElementById('event-display').textContent = `You rolled a ${roll}. ${event.description}`;
+    let eventDescription = `You rolled a ${roll}. ${event.description}`;
+    document.getElementById('event-display').textContent = eventDescription;
+    
     updateScores(event.effect);
+    
+    let scoreChanges = Object.entries(event.effect)
+        .map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)} ${value >= 0 ? '+' + value : value}`)
+        .join(', ');
+    document.getElementById('event-display').textContent += ` (${scoreChanges})`;
     
     checkGameEnd();
 }
